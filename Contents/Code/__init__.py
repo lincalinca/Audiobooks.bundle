@@ -15,6 +15,7 @@ IGNORE_SCORE = 45       # Any score lower than this will be ignored.
 THREAD_MAX = 20
 
 intl_sites={
+    'en' : { 'url': None               , 'rel_date' : u'Release Date'         , 'nar_by' : u'Narrated By'   , 'nar_by2': u'Narrated by'},
     'fr' : { 'url': 'www.audible.fr'   , 'rel_date' : u'Date de publication'  , 'nar_by' : u'Narrateur(s)'  , 'nar_by2': u'Lu par'},
     'de' : { 'url': 'www.audible.de'   , 'rel_date' : u'Erscheinungsdatum'    , 'nar_by' : u'Gesprochen von', 'rel_date2': u'Veröffentlicht'},
     'it' : { 'url': 'www.audible.it'   , 'rel_date' : u'Data di Pubblicazione', 'nar_by' : u'Narratore'     },
@@ -25,25 +26,22 @@ def SetupUrls(base, lang='en'):
     ctx=dict()
     if base is None:
         base='www.audible.com'
-    if lang in intl_sites :
-        base=intl_sites[lang]['url']
-        ctx['REL_DATE']=intl_sites[lang]['rel_date']
-        ctx['NAR_BY'  ]=intl_sites[lang]['nar_by']
-        if 'rel_date2' in intl_sites[lang]:
-            ctx['REL_DATE_INFO']=intl_sites[lang]['rel_date2']
-        else:
-            ctx['REL_DATE_INFO']=ctx['REL_DATE']
-        if 'nar_by2' in intl_sites[lang]:
-            ctx['NAR_BY_INFO' ]=intl_sites[lang]['nar_by2']
-        else:
-            ctx['NAR_BY_INFO' ]=ctx['NAR_BY'  ]
-    else:
-        ctx['REL_DATE'     ]='Release Date'
-        ctx['REL_DATE_INFO']=ctx['REL_DATE']
-        ctx['NAR_BY'       ]='Narrated By'
-        ctx['NAR_BY_INFO'  ]='Narrated by'
+    if lang not in intl_sites :
+        lang='en'
 
-    
+    if intl_sites[lang]['url'] is not None:
+        base=intl_sites[lang]['url']
+    ctx['REL_DATE']=intl_sites[lang]['rel_date']
+    ctx['NAR_BY'  ]=intl_sites[lang]['nar_by']
+    if 'rel_date2' in intl_sites[lang]:
+        ctx['REL_DATE_INFO']=intl_sites[lang]['rel_date2']
+    else:
+        ctx['REL_DATE_INFO']=ctx['REL_DATE']
+    if 'nar_by2' in intl_sites[lang]:
+        ctx['NAR_BY_INFO' ]=intl_sites[lang]['nar_by2']
+    else:
+        ctx['NAR_BY_INFO' ]=ctx['NAR_BY'  ]
+
     AUD_BASE_URL='http://' + base + '/'
     ctx['AUD_BOOK_INFO'         ]=AUD_BASE_URL + 'pd/%s?ipRedirectOverride=true'
     ctx['AUD_ARTIST_SEARCH_URL' ]=AUD_BASE_URL + 'search?searchAuthor=%s&ipRedirectOverride=true'
@@ -434,10 +432,15 @@ class AudiobookAlbum(Agent.Album):
 
         # Add the genres
         metadata.genres.clear()
-        metadata.genres.add(series)
-        metadata.genres.add(narrator)
-        metadata.genres.add(genre1)
-        metadata.genres.add(genre2)
+        metadata.genres.add(series.strip())
+        for c in narrator.split(','):
+            metadata.genres.add(c.strip())
+        metadata.genres.add(genre1.strip())
+        metadata.genres.add(genre2.strip())
+
+        metadata.producers.clear()
+        for c in narrator.split(','):
+            metadata.producers.add(c.strip())
         
         # other metadata
         metadata.title = title
