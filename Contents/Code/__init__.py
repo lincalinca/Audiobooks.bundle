@@ -389,7 +389,10 @@ class AudiobookAlbum(Agent.Album):
         # Make url
         url = ctx['AUD_BOOK_INFO'] % metadata.id
 
-        html = HTML.ElementFromURL(url, sleep=REQUEST_DELAY)
+        try:
+            html = HTML.ElementFromURL(url, sleep=REQUEST_DELAY)
+        except NetworkError:
+            pass
         
         for r in html.xpath('//div[contains (@id, "adbl_page_content")]'):
             date = self.getDateFromString(self.getStringContentFromXPath(r, '//li[contains (., "{0}")]/span[2]//text()'.format(ctx['REL_DATE_INFO']).decode('utf-8')))
