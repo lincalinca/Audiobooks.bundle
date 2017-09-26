@@ -250,13 +250,13 @@ class AudiobookAlbum(Agent.Album):
         if media.album == '[Unknown Album]' and not manual:
           return	
         
-        if manual:
+        if media.filename is not None:
+          Log('Album search: %s', media.album)
+        else:
           # If this is a custom search, use the user-entered name instead of the scanner hint.
-          Log('Custom album search for: ' + media.name)
+          Log('Custom album search for: {0} {1}'.format(media.name, media.album) )
           media.title = media.name
           media.album = media.name
-        else:
-          Log('Album search: ' + media.title)
 
         # Log some stuff for troubleshooting detail
         self.Log('-----------------------------------------------------------------------')
@@ -279,11 +279,14 @@ class AudiobookAlbum(Agent.Album):
 
         # Make the URL
         match = re.search("(?P<book_title>.*?)\[(?P<source>(audible))-(?P<guid>B[a-zA-Z0-9]{9,9})\]", media.title, re.IGNORECASE)
+        self.Log('Artist: %s', str(media.artist))
         if match:  ###metadata id provided
           searchUrl = ctx['AUD_KEYWORD_SEARCH_URL'] % (String.Quote((match.group('guid')).encode('utf-8'), usePlus=True))
           LCL_IGNORE_SCORE=0
         elif media.artist is not None:
-          searchUrl = ctx['AUD_SEARCH_URL'].format((String.Quote((normalizedName).encode('utf-8'), usePlus=True)), (String.Quote((media.artist).encode('utf-8'), usePlus=True)))
+          searchUrl = ctx['AUD_SEARCH_URL'].format(
+                  (String.Quote((normalizedName).encode('utf-8'), usePlus=True)), 
+                  (String.Quote((media.artist  ).encode('utf-8'), usePlus=True)))
         else:
           searchUrl = ctx['AUD_ALBUM_SEARCH_URL'] % (String.Quote((normalizedName).encode('utf-8'), usePlus=True))
         found = self.doSearch(searchUrl, ctx)
@@ -315,23 +318,23 @@ class AudiobookAlbum(Agent.Album):
             #    continue
 
             # Get the id
-            try:
-                #/pd/Romance/The-Ex-Factor-Audiobook/B00454N40A/ref=a_search_c4__pdFl_tlnk
-                itemId = url.split('/', 7)[4]
-            except:
-                Log('Error spliting: %s', url)
-                continue
+            for itemId in url.split('/') :
+                if re.match(r'B0[0-9A-Z]{8,8}', itemId):
+                    #Log('Match: %s', itemId)
+                    break
+                itemId=None
 
             if len(itemId) == 0:
+                Log('No Match: %s', url)
                 continue
 
             self.Log('* ID is                 %s', itemId)
 
-            title = f['title']
-            thumb = f['thumb']
-            date = f['date']
-            year = ''
-            author = f['author']
+            title    = f['title']
+            thumb    = f['thumb']
+            date     = f['date']
+            year     = ''
+            author   = f['author']
             narrator = f['narrator']
 
             if date is not None:
