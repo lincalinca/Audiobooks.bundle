@@ -315,7 +315,12 @@ class AudiobookAlbum(Agent.Album):
             #    continue
 
             # Get the id
-            itemId = url.split('/', 7)[6]
+            try:
+                #/pd/Romance/The-Ex-Factor-Audiobook/B00454N40A/ref=a_search_c4__pdFl_tlnk
+                itemId = url.split('/', 7)[4]
+            except:
+                Log('Error spliting: %s', url)
+                continue
 
             if len(itemId) == 0:
                 continue
