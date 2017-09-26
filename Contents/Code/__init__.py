@@ -210,21 +210,25 @@ class AudiobookAlbum(Agent.Album):
         return None
 
     def doSearch(self, url, ctx):
-        html = HTML.ElementFromURL(url, sleep=REQUEST_DELAY)
         found = []
+        try:
+            html = HTML.ElementFromURL(url, sleep=REQUEST_DELAY)
         
-        for r in html.xpath('//div[contains (@class, "adbl-search-result")]'):
-            date = self.getDateFromString(self.getStringContentFromXPath(r, 'div/div/ul/li[contains (., "{0}")]/span[2]//text()'.format(ctx['REL_DATE']).decode('utf-8')))
-            #title = self.getStringContentFromXPath(r, 'div[contains (@class,"adbl-prod-meta-data-cont")]/div[contains (@class,"adbl-prod-title")]/a[1]')
-            title = self.getStringContentFromXPath(r, 'div/div/div/div/a[1]')
-            #murl = self.getAnchorUrlFromXPath(r, 'div[contains (@class,"adbl-prod-meta-data-cont")]/div[contains (@class,"adbl-prod-title")]/a[1]')
-            murl = self.getAnchorUrlFromXPath(r, 'div/div/div/div/a[1]')
-            thumb = self.getImageUrlFromXPath(r, 'div[contains (@class,"adbl-prod-image-sample-cont")]/a/img')
-            author = self.getStringContentFromXPath(r, 'div/div/ul/li//a[contains (@class,"author-profile-link")][1]')
-            narrator = self.getStringContentFromXPath(r, 'div/div/ul/li[contains (., "{0}")]//a[1]'.format(ctx['NAR_BY']).decode('utf-8'))
-            self.Log('---------------------------------------XPATH SEARCH HIT-----------------------------------------------')
-            
-            found.append({'url': murl, 'title': title, 'date': date, 'thumb': thumb, 'author': author, 'narrator': narrator})
+            for r in html.xpath('//div[contains (@class, "adbl-search-result")]'):
+                date = self.getDateFromString(self.getStringContentFromXPath(r, 'div/div/ul/li[contains (., "{0}")]/span[2]//text()'.format(ctx['REL_DATE']).decode('utf-8')))
+                #title = self.getStringContentFromXPath(r, 'div[contains (@class,"adbl-prod-meta-data-cont")]/div[contains (@class,"adbl-prod-title")]/a[1]')
+                title = self.getStringContentFromXPath(r, 'div/div/div/div/a[1]')
+                #murl = self.getAnchorUrlFromXPath(r, 'div[contains (@class,"adbl-prod-meta-data-cont")]/div[contains (@class,"adbl-prod-title")]/a[1]')
+                murl = self.getAnchorUrlFromXPath(r, 'div/div/div/div/a[1]')
+                thumb = self.getImageUrlFromXPath(r, 'div[contains (@class,"adbl-prod-image-sample-cont")]/a/img')
+                author = self.getStringContentFromXPath(r, 'div/div/ul/li//a[contains (@class,"author-profile-link")][1]')
+                narrator = self.getStringContentFromXPath(r, 'div/div/ul/li[contains (., "{0}")]//a[1]'.format(ctx['NAR_BY']).decode('utf-8'))
+                self.Log('---------------------------------------XPATH SEARCH HIT-----------------------------------------------')
+                
+                found.append({'url': murl, 'title': title, 'date': date, 'thumb': thumb, 'author': author, 'narrator': narrator})
+
+        except NetworkError:
+            pass
 
         return found
 
