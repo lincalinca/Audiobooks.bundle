@@ -42,7 +42,7 @@ def SetupUrls(base, lang='en'):
     else:
         ctx['NAR_BY_INFO' ]=ctx['NAR_BY'  ]
 
-    AUD_BASE_URL='http://' + base + '/'
+    AUD_BASE_URL='https://' + base + '/'
     ctx['AUD_BOOK_INFO'         ]=AUD_BASE_URL + 'pd/%s?ipRedirectOverride=true'
     ctx['AUD_ARTIST_SEARCH_URL' ]=AUD_BASE_URL + 'search?searchAuthor=%s&ipRedirectOverride=true'
     ctx['AUD_ALBUM_SEARCH_URL'  ]=AUD_BASE_URL + 'search?searchTitle=%s&x=41&ipRedirectOverride=true'
