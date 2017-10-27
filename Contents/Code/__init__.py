@@ -1,7 +1,23 @@
 # Audiobooks (Audible)
 # coding: utf-8
 import re, types, traceback
+import urllib
 import Queue
+import json
+
+#from mutagen import File
+#from mutagen.mp4 import MP4
+#from mutagen.id3 import ID3
+#from mutagen.flac import FLAC
+#from mutagen.flac import Picture
+#from mutagen.oggvorbis import OggVorbis
+
+def json_decode(output):
+  try:
+    return json.loads(output)
+  except:
+    return None
+
 
 # URLs
 VERSION_NO = '1.2017.03.05.1'
@@ -251,6 +267,7 @@ class AudiobookAlbum(Agent.Album):
           return	
         
         if media.filename is not None:
+          Log('Filename search: %s', urllib.unquote(media.filename))
           Log('Album search: %s', media.album)
         else:
           # If this is a custom search, use the user-entered name instead of the scanner hint.
@@ -406,7 +423,12 @@ class AudiobookAlbum(Agent.Album):
         except NetworkError:
             pass
         
+        date=None
+        series=''
+        genre1=None
+        genre2=None
         for r in html.xpath('//div[contains (@id, "adbl_page_content")]'):
+            Log('Hello')
             date = self.getDateFromString(self.getStringContentFromXPath(r, '//li[contains (., "{0}")]/span[2]//text()'.format(ctx['REL_DATE_INFO']).decode('utf-8')))
             #title = self.getStringContentFromXPath(r, 'div[contains (@class,"adbl-prod-meta-data-cont")]/div[contains (@class,"adbl-prod-title")]/a[1]')
             title = self.getStringContentFromXPath(r, '//h1[contains (@class, "adbl-prod-h1-title")]/text()')
@@ -420,7 +442,34 @@ class AudiobookAlbum(Agent.Album):
             genre1 = self.getStringContentFromXPath(r,'//div[contains(@class,"adbl-pd-breadcrumb")]/div[2]/a/span/text()')
             genre2 = self.getStringContentFromXPath(r,'//div[contains(@class,"adbl-pd-breadcrumb")]/div[3]/a/span/text()')
             self.Log('---------------------------------------XPATH SEARCH HIT-----------------------------------------------')
+
+        if date is None :
+            for r in html.xpath('//script[contains (@type, "application/ld+json")]'):
+                json_data=json_decode(r.text_content())
+                for json_data in json_data:
+                    if 'datePublished' in json_data:
+                        #for key in json_data:
+                        #    Log('{0}:{1}'.format(key, json_data[key]))
+                        date=self.getDateFromString(json_data['datePublished'])
+                        title=json_data['name']
+                        thumb=json_data['image']
+                        author=''
+                        for c in json_data['author'] :
+                            author+=c['name']
+                        narrator=''
+                        for c in json_data['readBy'] :
+                            narrator+=c['name']
+                        studio=json_data['publisher']
+                        synopsis=json_data['description']
+                    if 'itemListElement' in json_data:
+                        #for key in json_data:
+                        #    Log('{0}:{1}'.format(key, json_data[key]))
+                        genre1=json_data['itemListElement'][1]['item']['name']
+                        genre2=json_data['itemListElement'][2]['item']['name']
             
+            for r in html.xpath('//li[contains (@class, "seriesLabel")]'):
+                series = self.getStringContentFromXPath(r, '//li[contains (@class, "seriesLabel")]//a[1]')
+                #Log(series.strip())
         # We need: 
         # Genre Tags
         # XXStudio
