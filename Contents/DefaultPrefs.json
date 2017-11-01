@@ -2,16 +2,14 @@
 	"label": "Support for outside the U.S.",
 	"type": "bool",
 	"default": "false"
-	
-	
-	
 },{
     "id"      : "site",
-    "label"   : "Select amazonsite to use for english language",
+    "label"   : "Select Audible site to use for english language",
     "type"    : "enum",
     "values"  : ["www.audible.com","www.audible.co.uk","www.audible.com.au"],
     "default" : "www.audible.com"
-},{	"id": "debug",
+},{
+	"id": "debug",
 	"label": "Ouput debugging info in logs",
 	"type": "bool",
 	"default": "false"

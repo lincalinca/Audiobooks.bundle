@@ -384,6 +384,7 @@ class AudiobookAlbum(Agent.Album):
             self.Log('* Narrator is           %s', narrator)
             self.Log('* Date is               %s', str(date))
             self.Log('* Score is              %s', str(score))
+            self.Log('* Thumb is              %s', thumb)
 
             if score >= LCL_IGNORE_SCORE:
                 info.append({'id': itemId, 'title': title, 'year': year, 'date': date, 'score': score, 'thumb': thumb, 'artist' : author})
@@ -428,7 +429,6 @@ class AudiobookAlbum(Agent.Album):
         genre1=None
         genre2=None
         for r in html.xpath('//div[contains (@id, "adbl_page_content")]'):
-            Log('Hello')
             date = self.getDateFromString(self.getStringContentFromXPath(r, '//li[contains (., "{0}")]/span[2]//text()'.format(ctx['REL_DATE_INFO']).decode('utf-8')))
             #title = self.getStringContentFromXPath(r, 'div[contains (@class,"adbl-prod-meta-data-cont")]/div[contains (@class,"adbl-prod-title")]/a[1]')
             title = self.getStringContentFromXPath(r, '//h1[contains (@class, "adbl-prod-h1-title")]/text()')
@@ -454,10 +454,18 @@ class AudiobookAlbum(Agent.Album):
                         title=json_data['name']
                         thumb=json_data['image']
                         author=''
+                        counter=0
                         for c in json_data['author'] :
+                            counter+=1
+                            if counter > 1 :  
+                                author+=', '
                             author+=c['name']
                         narrator=''
+                        counter=0
                         for c in json_data['readBy'] :
+                            counter+=1
+                            if counter > 1 :  
+                                narrator+=','
                             narrator+=c['name']
                         studio=json_data['publisher']
                         synopsis=json_data['description']
@@ -480,6 +488,19 @@ class AudiobookAlbum(Agent.Album):
         # XXBigger album cover
 
         
+		
+        #cleanup synopsis
+        synopsis = synopsis.replace("<i>", "")
+        synopsis = synopsis.replace("</i>", "")
+        synopsis = synopsis.replace("<u>", "")
+        synopsis = synopsis.replace("</u>", "")
+        synopsis = synopsis.replace("<b>", "")
+        synopsis = synopsis.replace("</b>", "")
+        synopsis = synopsis.replace("<br />", "")
+        synopsis = synopsis.replace("<p>", "")
+        synopsis = synopsis.replace("</p>", "\n")
+		
+		
         self.Log('date:        %s', date)
         self.Log('title:       %s', title)
         self.Log('author:      %s', author)
