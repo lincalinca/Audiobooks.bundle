@@ -4,6 +4,7 @@ import re, types, traceback
 import urllib
 import Queue
 import json
+import os
 
 #from mutagen import File
 #from mutagen.mp4 import MP4
@@ -297,8 +298,10 @@ class AudiobookAlbum(Agent.Album):
         # Make the URL
         match = False
         if media.filename is not None:
-            match = re.search(Prefs['id_regex'], media.filename, re.IGNORECASE)
+            filename=os.path.basename(urllib.unquote(media.filename))
+            match = re.search(Prefs['id_regex'], filename, re.IGNORECASE)
             Log('id_regex: %s', str(Prefs['id_regex']))
+            Log('filename: %s', str(filename))
         if not match:  ###metadata id provided
             match = re.search("(?P<book_title>.*?)\[(?P<source>(audible))-(?P<audibleid>B[a-zA-Z0-9]{9,9})\]", media.title, re.IGNORECASE)
         self.Log('Artist: %s', str(media.artist))
