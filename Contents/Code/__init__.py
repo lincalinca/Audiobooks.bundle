@@ -295,6 +295,7 @@ class AudiobookAlbum(Agent.Album):
         self.Log('***** SEARCHING FOR "%s" - AUDIBLE v.%s *****', normalizedName, VERSION_NO)
 
         # Make the URL
+        match = False
         if media.filename is not None:
             match = re.search(Prefs['id_regex'], media.filename, re.IGNORECASE)
             Log('id_regex: %s', str(Prefs['id_regex']))
