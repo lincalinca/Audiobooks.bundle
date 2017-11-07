@@ -13,4 +13,9 @@
 	"label": "Ouput debugging info in logs",
 	"type": "bool",
 	"default": "false"
+},{
+	"id": "id_regex",
+	"label": "python RegEx to extract audibleid from filename",
+	"type":"text",
+	"default":"\\[audible-(?P<audibleid>B[a-zA-Z0-9]{9,9})\\]"
 }]

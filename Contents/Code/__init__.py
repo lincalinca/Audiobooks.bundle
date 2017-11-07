@@ -295,10 +295,14 @@ class AudiobookAlbum(Agent.Album):
         self.Log('***** SEARCHING FOR "%s" - AUDIBLE v.%s *****', normalizedName, VERSION_NO)
 
         # Make the URL
-        match = re.search("(?P<book_title>.*?)\[(?P<source>(audible))-(?P<guid>B[a-zA-Z0-9]{9,9})\]", media.title, re.IGNORECASE)
+        if media.filename is not None:
+            match = re.search(Prefs['id_regex'], media.filename, re.IGNORECASE)
+            Log('id_regex: %s', str(Prefs['id_regex']))
+        if not match:  ###metadata id provided
+            match = re.search("(?P<book_title>.*?)\[(?P<source>(audible))-(?P<audibleid>B[a-zA-Z0-9]{9,9})\]", media.title, re.IGNORECASE)
         self.Log('Artist: %s', str(media.artist))
         if match:  ###metadata id provided
-          searchUrl = ctx['AUD_KEYWORD_SEARCH_URL'] % (String.Quote((match.group('guid')).encode('utf-8'), usePlus=True))
+          searchUrl = ctx['AUD_KEYWORD_SEARCH_URL'] % (String.Quote((match.group('audibleid')).encode('utf-8'), usePlus=True))
           LCL_IGNORE_SCORE=0
         elif media.artist is not None:
           searchUrl = ctx['AUD_SEARCH_URL'].format(
