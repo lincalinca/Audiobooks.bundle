@@ -33,11 +33,12 @@ IGNORE_SCORE = 45       # Any score lower than this will be ignored.
 THREAD_MAX = 20
 
 intl_sites={
-    'en' : { 'url': None               , 'rel_date' : u'Release Date'         , 'nar_by' : u'Narrated By'   , 'nar_by2': u'Narrated by'},
-    'fr' : { 'url': 'www.audible.fr'   , 'rel_date' : u'Date de publication'  , 'nar_by' : u'Narrateur(s)'  , 'nar_by2': u'Lu par'},
-    'de' : { 'url': 'www.audible.de'   , 'rel_date' : u'Erscheinungsdatum'    , 'nar_by' : u'Gesprochen von', 'rel_date2': u'Veröffentlicht'},
-    'it' : { 'url': 'www.audible.it'   , 'rel_date' : u'Data di Pubblicazione', 'nar_by' : u'Narratore'     },
-    'jp' : { 'url': 'www.audible.co.jp', 'rel_date' : u'N/A', 'nar_by' : u'ナレーター'     }, # untested
+    'en' : { 'url': None                , 'rel_date' : u'Release Date'         , 'nar_by' : u'Narrated By'   , 'nar_by2': u'Narrated by'},
+    'au' : { 'url': 'www.audible.com.au', 'rel_date' : u'Release Date'         , 'nar_by' : u'Narrated By'   , 'nar_by2': u'Narrated by'},
+    'fr' : { 'url': 'www.audible.fr'    , 'rel_date' : u'Date de publication'  , 'nar_by' : u'Narrateur(s)'  , 'nar_by2': u'Lu par'},
+    'de' : { 'url': 'www.audible.de'    , 'rel_date' : u'Erscheinungsdatum'    , 'nar_by' : u'Gesprochen von', 'rel_date2': u'Veröffentlicht'},
+    'it' : { 'url': 'www.audible.it'    , 'rel_date' : u'Data di Pubblicazione', 'nar_by' : u'Narratore'     },
+    'jp' : { 'url': 'www.audible.co.jp' , 'rel_date' : u'N/A', 'nar_by' : u'ナレーター'     }, # untested
     }
 
 
